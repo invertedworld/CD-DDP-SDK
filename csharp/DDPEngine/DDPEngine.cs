@@ -11,7 +11,7 @@ public static class DDPEngine
     private static string FindDDP() =>
         Environment.GetEnvironmentVariable("DDP_SDK_BIN") ?? DefaultBin;
 
-    private static void RunDDP(string inputPath, string outputPath, string apiKey)
+    private static void RunDDP(string inputPath, string outputPath, string licenseKey)
     {
         var bin = FindDDP();
         var startInfo = new ProcessStartInfo
@@ -38,7 +38,7 @@ public static class DDPEngine
         }
     }
 
-    private static string RunDDPJson(string inputPath, string apiKey, string? outputPath)
+    private static string RunDDPJson(string inputPath, string licenseKey, string? outputPath)
     {
         var bin = FindDDP();
         var args = new List<string> { "json", inputPath, "--license-key", licenseKey };
