@@ -2,9 +2,9 @@
 
 ## Overview
 
-DDP SDK parses DDP (Disc Description Protocol) filesets and exports track metadata plus individual WAV files. **All parsing and API key validation run in native code.** The Python, TypeScript, C#, and Java libraries are thin wrappers that invoke the `ddp` binary.
+DDP SDK parses DDP (Disc Description Protocol) filesets and exports track metadata plus individual WAV files. **All parsing and license key validation run in native code.** The Python, TypeScript, C#, and Java libraries are thin wrappers that invoke the `ddp` binary.
 
-You receive an API key from the publisher when you sign up. The binary validates keys locally.
+You receive a license key from the publisher when you sign up. The binary validates keys locally.
 
 ---
 
@@ -28,14 +28,14 @@ The publisher provides the `ddp` executable. Install it first — the Python, Ty
 
 ---
 
-## API Key
+## License Key
 
-Store your API key securely. Expired keys are rejected — contact the publisher for a new key.
+Store your license key securely. Expired keys are rejected — contact the publisher for a new key.
 
 **Providing the key:**
 
 1. **Command line:** `ddp process input output --api-key "your-token"`
-2. **Environment:** `export DDP_API_KEY="your-token"` (add to `~/.bashrc` / `~/.zshrc` to persist)
+2. **Environment:** `export DDP_LICENSE_KEY="your-token"` (add to `~/.bashrc` / `~/.zshrc` to persist)
 3. **`.env` file** in the current directory — the `ddp` binary loads it automatically when invoked (the language wrappers do not load `.env`). Do not commit to version control; add `.env` to `.gitignore`.
 
 ---
@@ -250,7 +250,7 @@ let metadata_json = process_to_json("/path/to/ddp", "your-api-key").await?;
 
 ### `process_from_bytes`
 
-Process DDP from an in-memory map of filename to contents. Writes metadata and WAVs to output path. Requires valid API key.
+Process DDP from an in-memory map of filename to contents. Writes metadata and WAVs to output path. Requires valid license key.
 
 ```rust
 use std::collections::HashMap;
@@ -359,7 +359,7 @@ async fn main() -> Result<(), Error> {
 - **Memory:** See [Memory and resource requirements](#memory-and-resource-requirements). Typical: 512 MB for singles/EPs, 1024 MB for full CDs with WAV output.
 - **Ephemeral storage** (`/tmp`): Must hold WAV output (~same as DDPMS). 512 MB default is enough for &lt; 50 min; increase for full CDs.
 - **Network:** Outbound access may be required for licence validation
-- **API key:** In request payload or `DDP_API_KEY` env
+- **License key:** In request payload or `DDP_LICENSE_KEY` env
 
 **4. Build and deploy:**
 ```bash
@@ -384,7 +384,7 @@ serde_json = "1"
 zip = "2"
 ```
 
-**2. Handler:** Accept DDP ZIP in the request body, extract to `HashMap<String, Vec<u8>>`, call `process_from_bytes(&files, output_path, &api_key).await`, return metadata JSON. Use API key from `DDP_API_KEY` (app setting) or a request header.
+**2. Handler:** Accept DDP ZIP in the request body, extract to `HashMap<String, Vec<u8>>`, call `process_from_bytes(&files, output_path, &api_key).await`, return metadata JSON. Use license key from `DDP_LICENSE_KEY` (app setting) or a request header.
 
 **3. host.json:**
 ```json

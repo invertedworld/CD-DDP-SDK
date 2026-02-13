@@ -26,9 +26,9 @@ Subject to the terms of this Agreement, Licensor grants Licensee a non-exclusive
 
 (c) Distribute the SDK as embedded in or alongside Licensee’s Licensed Software, provided that such distribution complies with this Agreement.
 
-The license may be perpetual or for a defined period, as set out in the commercial agreement between the parties. The license is limited to the number of API keys issued by Licensor to Licensee. Each API key authorizes use of the SDK as documented. Licensee shall not exceed authorized usage.
+The license may be perpetual or for a defined period, as set out in the commercial agreement between the parties. The license is limited to the number of license keys issued by Licensor to Licensee. Each license key authorizes use of the SDK as documented. Licensee shall not exceed authorized usage.
 
-**Developer use.** Notwithstanding the above, Licensor permits use of an API key for learning, development, and testing purposes only, by a single person, under the terms of this license. Such use is for development purposes and must not be used for production, distribution, or any commercial purpose. The API key must be treated as a secret and shall not be shared or disclosed.
+**Developer use.** Notwithstanding the above, Licensor permits use of a license key for learning, development, and testing purposes only, by a single person, under the terms of this license. Such use is for development purposes and must not be used for production, distribution, or any commercial purpose. The license key must be treated as a secret and shall not be shared or disclosed.
 
 ---
 
@@ -44,7 +44,7 @@ Licensee shall not, and shall not permit any third party to:
 
 (d) Use the SDK for any unlawful purpose;
 
-(e) Circumvent, disable, or tamper with any license key, API key validation, or other technical protection measures.
+(e) Circumvent, disable, or tamper with any license key validation or other technical protection measures.
 
 ---
 
@@ -58,9 +58,9 @@ The DDP Logo is provided in this distribution at `assets/ddp.png` for Licensee�
 
 ---
 
-## 5. API Key and Confidentiality
+## 5. License Key and Confidentiality
 
-The API key provided by Licensor is confidential and for Licensee’s use only. Licensee shall keep the API key secure and shall not disclose it to unauthorized third parties. Licensee may embed the API key in software deployed for Licensee’s own use, but shall take reasonable measures to protect it from exposure. Any disclosure of the API key must be reported urgently to the Licensor.
+The license key provided by Licensor is confidential and for Licensee’s use only. Licensee shall keep the license key secure and shall not disclose it to unauthorized third parties. Licensee may embed the license key in software deployed for Licensee’s own use, but shall take reasonable measures to protect it from exposure. Any disclosure of the license key must be reported urgently to the Licensor.
 
 ---
 
@@ -74,7 +74,7 @@ Support and updates are provided (or not) as specified in a separate support agr
 
 This Agreement is effective upon acceptance (e.g., by signing, by use of the SDK, or as otherwise agreed) and continues until terminated.
 
-Licensor may terminate this Agreement immediately upon breach by Licensee, or upon thirty (30) days’ written notice for any reason. Upon termination, Licensee shall cease use of the SDK and any API keys. Expiration or revocation of an API key terminates the license for that key. Sections 8, 9, 10, and 11 survive termination.
+Licensor may terminate this Agreement immediately upon breach by Licensee, or upon thirty (30) days’ written notice for any reason. Upon termination, Licensee shall cease use of the SDK and any license keys. Expiration or revocation of a license key terminates the license for that key. Sections 8, 9, 10, and 11 survive termination.
 
 ---
 

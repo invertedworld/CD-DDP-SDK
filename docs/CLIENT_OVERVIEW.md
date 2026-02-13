@@ -65,11 +65,11 @@ Input: DDP directory or ZIP. Output: structured metadata and individual WAV trac
 
 ## 4. How Licensing Works
 
-As a client, you receive an **API key** from the publisher when you sign up. The key:
+As a client, you receive a **license key** from the publisher when you sign up. The key:
 
 - Is validated locally (no phone-home; no callbacks to the publisher)
 - Can expire (e.g. annual renewal)
-- Is passed via `--api-key`, `DDP_API_KEY` env, or `.env` file
+- Is passed via `--api-key`, `DDP_LICENSE_KEY` env, or `.env` file
 
 You run the binary or call the library; validation happens in-process. Typically works offline. In some environments (e.g. restricted containers, air-gapped systems), outbound access may be needed for time-sync checks used in expiry validation — see **Network** below.
 
@@ -137,14 +137,14 @@ const result = await process("/path/to/ddp", "/path/to/output", "your-api-key");
 | **Parsing** | DDP 2.00 and common variants; tested with real-world files |
 | **Performance** | Rust core; handles large DDPMS (700 MB+); low memory footprint |
 | **Deployment** | CLI, Python, TypeScript, C#, Java, Rust library; Lambda, Azure, on-prem |
-| **Licensing** | API key validated locally; no phone-home; offline capable |
+| **Licensing** | License key validated locally; no phone-home; offline capable |
 | **Output** | JSON metadata for downstream systems |
 
 ---
 
 ## 8. Evaluation
 
-1. Request API key and binary from the publisher.
+1. Request license key and binary from the publisher.
 2. Run against sample DDP files; verify metadata and WAV output.
 3. Integrate into a staging pipeline (CLI or wrapper).
 4. Validate output and performance.
@@ -170,4 +170,4 @@ Contact the publisher for evaluation keys and support.
 
 ---
 
-*DDP SDK — parse DDP, export metadata and WAV. One binary, one API key.*
+*DDP SDK — parse DDP, export metadata and WAV. One binary, one license key.*

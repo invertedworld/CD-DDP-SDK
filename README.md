@@ -4,7 +4,7 @@ An SDK for processing DDP (Disc Description Protocol) files. DDP is the industry
 
 This repository contains the distribution for end users: language wrappers and documentation.
 
-**The `ddp` binary and your API key are provided together by the publisher when you sign up.** Contact the publisher to get started. The binary is not included in this repository.
+**The `ddp` binary and your license key are provided together by the publisher when you sign up.** Contact the publisher to get started. The binary is not included in this repository.
 
 ## Clone and Setup
 
@@ -14,7 +14,7 @@ This repository contains the distribution for end users: language wrappers and d
    cd CD-DDP-SDK
    ```
 
-2. **Install the binary** — the publisher provides the `ddp` executable when you receive your API key. Copy it to a directory in your PATH (e.g. `~/bin/` or `/usr/local/bin/`) and make it executable:
+2. **Install the binary** — the publisher provides the `ddp` executable when you receive your license key. Copy it to a directory in your PATH (e.g. `~/bin/` or `/usr/local/bin/`) and make it executable:
    ```bash
    chmod +x /path/to/ddp
    ```
@@ -25,9 +25,9 @@ This repository contains the distribution for end users: language wrappers and d
    - **Java:** Add as Maven dependency or `mvn install -f java/pom.xml`
    - **C#:** Add project reference to `csharp/DDPEngine/DDPEngine.csproj`
 
-4. **Set your API key** (provided by the publisher along with the binary):
+4. **Set your license key** (provided by the publisher along with the binary):
    ```bash
-   export DDP_API_KEY="your-token"
+   export DDP_LICENSE_KEY="your-token"
    ```
    Or pass `--api-key "your-token"` to each command.
 
@@ -43,7 +43,7 @@ This repository contains the distribution for end users: language wrappers and d
 
 ## Quick Start
 
-After cloning, installing the binary (from the publisher), and setting your API key:
+After cloning, installing the binary (from the publisher), and setting your license key:
 
 ```bash
 ddp process /path/to/ddp /path/to/output --api-key "your-token"

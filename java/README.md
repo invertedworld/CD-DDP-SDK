@@ -1,6 +1,6 @@
 # DDP SDK (Java)
 
-Thin wrapper around the `ddp` binary. API key validation and DDP parsing run in native code.
+Thin wrapper around the `ddp` binary. License key validation and DDP parsing run in native code.
 
 See the [unified manual](../docs/MANUAL.md) for full documentation.
 
