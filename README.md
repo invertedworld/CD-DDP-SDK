@@ -29,7 +29,7 @@ This repository contains the distribution for end users: language wrappers and d
    ```bash
    export DDP_LICENSE_KEY="your-token"
    ```
-   Or pass `--api-key "your-token"` to each command.
+   Or pass `--license-key "your-token"` to each command.
 
 ## Contents
 
@@ -46,7 +46,7 @@ This repository contains the distribution for end users: language wrappers and d
 After cloning, installing the binary (from the publisher), and setting your license key:
 
 ```bash
-ddp process /path/to/ddp /path/to/output --api-key "your-token"
+ddp process /path/to/ddp /path/to/output --license-key "your-token"
 ```
 
 See [docs/MANUAL.md](docs/MANUAL.md) for full documentation.

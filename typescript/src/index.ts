@@ -33,7 +33,7 @@ async function runDDP(
   apiKey: string
 ): Promise<void> {
   try {
-    await execFileAsync(findDDP(), ["process", inputPath, outputPath, "--api-key", apiKey], {
+    await execFileAsync(findDDP(), ["process", inputPath, outputPath, "--license-key", licenseKey], {
       encoding: "utf-8",
     });
   } catch (err: unknown) {
@@ -49,7 +49,7 @@ async function runDDPJson(
   apiKey: string,
   outputPath?: string
 ): Promise<string> {
-  const args = ["json", inputPath, "--api-key", apiKey];
+  const args = ["json", inputPath, "--license-key", licenseKey];
   if (outputPath !== undefined) {
     args.push("--output", outputPath);
   }

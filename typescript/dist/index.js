@@ -61,7 +61,7 @@ class EngineError extends Error {
 exports.EngineError = EngineError;
 async function runDdp(inputPath, outputPath, apiKey) {
     try {
-        await execFileAsync(findDdp(), ["process", inputPath, outputPath, "--api-key", apiKey], {
+        await execFileAsync(findDdp(), ["process", inputPath, outputPath, "--license-key", licenseKey], {
             encoding: "utf-8",
         });
     }
@@ -73,7 +73,7 @@ async function runDdp(inputPath, outputPath, apiKey) {
     }
 }
 async function runDdpJson(inputPath, apiKey, outputPath) {
-    const args = ["json", inputPath, "--api-key", apiKey];
+    const args = ["json", inputPath, "--license-key", licenseKey];
     if (outputPath !== undefined) {
         args.push("--output", outputPath);
     }

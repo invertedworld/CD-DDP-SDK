@@ -29,7 +29,7 @@ public final class DDPEngine {
                 "process",
                 inputPath,
                 outputPath,
-                "--api-key",
+                "--license-key",
                 apiKey
         );
         pb.redirectErrorStream(true); // merge stderr into stdout to avoid deadlock
@@ -52,7 +52,7 @@ public final class DDPEngine {
         args.add(findDDP());
         args.add("json");
         args.add(inputPath);
-        args.add("--api-key");
+        args.add("--license-key");
         args.add(apiKey);
         if (outputPath != null) {
             args.add("--output");

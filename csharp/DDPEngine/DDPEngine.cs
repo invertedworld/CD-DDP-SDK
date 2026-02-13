@@ -17,7 +17,7 @@ public static class DDPEngine
         var startInfo = new ProcessStartInfo
         {
             FileName = bin,
-            ArgumentList = { "process", inputPath, outputPath, "--api-key", apiKey },
+            ArgumentList = { "process", inputPath, outputPath, "--license-key", licenseKey },
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -41,7 +41,7 @@ public static class DDPEngine
     private static string RunDDPJson(string inputPath, string apiKey, string? outputPath)
     {
         var bin = FindDDP();
-        var args = new List<string> { "json", inputPath, "--api-key", apiKey };
+        var args = new List<string> { "json", inputPath, "--license-key", licenseKey };
         if (outputPath != null)
             args.AddRange(new[] { "--output", outputPath });
 

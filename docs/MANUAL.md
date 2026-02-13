@@ -34,7 +34,7 @@ Store your license key securely. Expired keys are rejected — contact the publi
 
 **Providing the key:**
 
-1. **Command line:** `ddp process input output --api-key "your-token"`
+1. **Command line:** `ddp process input output --license-key "your-token"`
 2. **Environment:** `export DDP_LICENSE_KEY="your-token"` (add to `~/.bashrc` / `~/.zshrc` to persist)
 3. **`.env` file** in the current directory — the `ddp` binary loads it automatically when invoked (the language wrappers do not load `.env`). Do not commit to version control; add `.env` to `.gitignore`.
 
@@ -51,7 +51,7 @@ Store your license key securely. Expired keys are rejected — contact the publi
 **Paths:**
 - Local paths: `/path/to/ddp`, `./output`
 - `file://` URLs: `file:///path/to/ddp`
-- **S3 (mock):** `s3://bucket/key` — for testing without real AWS. Set `DDP_SDK_S3_MOCK_ROOT` to a local directory; `s3://bucket/key` maps to `$S3_MOCK_ROOT/bucket/key`. Example: `DDP_SDK_S3_MOCK_ROOT=/tmp/mock-s3 ddp process s3://mybucket/ddp s3://mybucket/out --api-key ...`
+- **S3 (mock):** `s3://bucket/key` — for testing without real AWS. Set `DDP_SDK_S3_MOCK_ROOT` to a local directory; `s3://bucket/key` maps to `$S3_MOCK_ROOT/bucket/key`. Example: `DDP_SDK_S3_MOCK_ROOT=/tmp/mock-s3 ddp process s3://mybucket/ddp s3://mybucket/out --license-key ...`
 
 **Example layout:**
 
@@ -98,10 +98,10 @@ When using paths (`process(input_dir, output_dir, ...)`), the binary loads DDPMS
 ## CLI
 
 ```bash
-ddp process <input_dir> <output_dir> [--api-key <token>]
+ddp process <input_dir> <output_dir> [--license-key <token>]
 ```
 
-If `--api-key` is omitted, `DDP_API_KEY` must be set.
+If `--license-key` is omitted, `DDP_LICENSE_KEY` must be set.
 
 ---
 
@@ -400,7 +400,7 @@ zip = "2"
 }
 ```
 
-**4. Application settings:** `DDP_API_KEY`. Outbound network access may be required.
+**4. Application settings:** `DDP_LICENSE_KEY`. Outbound network access may be required.
 
 **5. Memory:** See [Memory and resource requirements](#memory-and-resource-requirements). Azure Consumption plan (1.5 GB) is sufficient for typical full CDs.
 

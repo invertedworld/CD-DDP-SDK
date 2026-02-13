@@ -1,6 +1,6 @@
 /**
  * Wrapper tests. Require ddp binary, token, and ddpfiles.
- * Set DDP_SDK_BIN, DDP_API_KEY (or DDP_TOKEN_FILE), DDP_INPUT_DIR to run.
+ * Set DDP_SDK_BIN, DDP_LICENSE_KEY (or DDP_TOKEN_FILE), DDP_INPUT_DIR to run.
  * Skips when binary/token/ddpfiles are missing.
  */
 

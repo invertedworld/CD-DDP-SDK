@@ -69,7 +69,7 @@ As a client, you receive a **license key** from the publisher when you sign up. 
 
 - Is validated locally (no phone-home; no callbacks to the publisher)
 - Can expire (e.g. annual renewal)
-- Is passed via `--api-key`, `DDP_LICENSE_KEY` env, or `.env` file
+- Is passed via `--license-key`, `DDP_LICENSE_KEY` env, or `.env` file
 
 You run the binary or call the library; validation happens in-process. Typically works offline. In some environments (e.g. restricted containers, air-gapped systems), outbound access may be needed for time-sync checks used in expiry validation — see **Network** below.
 
@@ -100,7 +100,7 @@ You run the binary or call the library; validation happens in-process. Typically
 ### CLI
 
 ```bash
-ddp process /path/to/ddp /path/to/output --api-key "your-token"
+ddp process /path/to/ddp /path/to/output --license-key "your-token"
 # → metadata.json + track_01.wav, track_02.wav, ... in /path/to/output
 ```
 

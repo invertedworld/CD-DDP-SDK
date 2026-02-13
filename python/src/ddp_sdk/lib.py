@@ -24,7 +24,7 @@ def _find_ddp() -> str:
 
 
 def _run_ddp(input_path: str, output_path: str, api_key: str) -> None:
-    cmd = [_find_ddp(), "process", input_path, output_path, "--api-key", api_key]
+    cmd = [_find_ddp(), "process", input_path, output_path, "--license-key", license_key]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise EngineError(
@@ -36,7 +36,7 @@ def _run_ddp(input_path: str, output_path: str, api_key: str) -> None:
 def _run_ddp_json(
     input_path: str, api_key: str, output_path: str | None = None
 ) -> str:
-    cmd = [_find_ddp(), "json", input_path, "--api-key", api_key]
+    cmd = [_find_ddp(), "json", input_path, "--license-key", license_key]
     if output_path is not None:
         cmd.extend(["--output", output_path])
     result = subprocess.run(cmd, capture_output=True, text=True)
