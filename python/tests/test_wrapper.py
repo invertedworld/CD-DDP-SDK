@@ -78,7 +78,7 @@ def test_process_invalid_key_raises(tmp_path):
     _ensure_env()
     with pytest.raises(EngineError) as exc_info:
         process(INPUT_DIR, str(tmp_path), "invalid-garbage-token")
-    assert "InvalidApiKey" in str(exc_info.value) or "invalid" in str(exc_info.value).lower()
+    assert "InvalidLicenseKey" in str(exc_info.value) or "invalid" in str(exc_info.value).lower()
 
 
 @pytest.mark.skipif(

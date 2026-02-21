@@ -23,7 +23,7 @@ import { process, processFromBytes } from "ddp-sdk";
 import * as fs from "fs";
 
 // From path
-const metadata = await process("/path/to/ddp", "/path/to/output", "your-api-key");
+const metadata = await process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files
 const files = {
@@ -31,5 +31,5 @@ const files = {
   PQDESCR: fs.readFileSync("PQDESCR"),
   DDPMS: fs.readFileSync("DDPMS"),
 };
-const { metadata, wavs } = await processFromBytes(files, "your-api-key");
+const { metadata, wavs } = await processFromBytes(files, "your-license-key");
 ```

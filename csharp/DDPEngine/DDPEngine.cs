@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 
 namespace DDPEngine;
 
-/// <summary>Thin wrapper around the ddp binary. API key validation and parsing run in native code.</summary>
+/// <summary>Thin wrapper around the ddp binary. License key validation and parsing run in native code.</summary>
 public static class DDPEngine
 {
     private const string DefaultBin = "ddp";
@@ -73,12 +73,12 @@ public static class DDPEngine
 
     /// <summary>
     /// Process DDP from in-memory files. Writes metadata and WAVs to outputPath.
-    /// API key validation runs in the native binary. Returns metadata object.
+    /// License key validation runs in the native binary. Returns metadata object.
     /// </summary>
     public static JsonObject ProcessFromBytes(
         IReadOnlyDictionary<string, byte[]> files,
         string outputPath,
-        string apiKey)
+        string licenseKey)
     {
         var inDir = Path.Combine(Path.GetTempPath(), "ddp-in-" + Guid.NewGuid().ToString("N")[..8]);
         try
@@ -91,7 +91,7 @@ public static class DDPEngine
             }
 
             var outBase = outputPath.TrimEnd('/', '\\');
-            RunDDP(inDir, outBase, apiKey);
+            RunDDP(inDir, outBase, licenseKey);
 
             var metaPath = Path.Combine(outBase, "metadata.json");
             var metaJson = File.ReadAllText(metaPath);
@@ -106,13 +106,13 @@ public static class DDPEngine
 
     /// <summary>
     /// Process DDP from a path (directory or ZIP). Invokes ddp binary.
-    /// API key validation runs in the native binary.
+    /// License key validation runs in the native binary.
     /// Returns the metadata object (metadata.json contents).
     /// </summary>
-    public static JsonObject Process(string inputPath, string outputPath, string apiKey)
+    public static JsonObject Process(string inputPath, string outputPath, string licenseKey)
     {
         var outBase = outputPath.TrimEnd('/', '\\');
-        RunDDP(inputPath, outBase, apiKey);
+        RunDDP(inputPath, outBase, licenseKey);
 
         var metaPath = Path.Combine(outBase, "metadata.json");
         var metaJson = File.ReadAllText(metaPath);
@@ -121,12 +121,12 @@ public static class DDPEngine
 
     /// <summary>
     /// Extract metadata JSON only (no WAV files). Invokes ddp binary.
-    /// API key validation runs in the native binary.
+    /// License key validation runs in the native binary.
     /// Returns the metadata object. If outputPath is given, also writes metadata.json there.
     /// </summary>
-    public static JsonObject ProcessToJson(string inputPath, string apiKey, string? outputPath = null)
+    public static JsonObject ProcessToJson(string inputPath, string licenseKey, string? outputPath = null)
     {
-        var jsonStr = RunDDPJson(inputPath, apiKey, outputPath);
+        var jsonStr = RunDDPJson(inputPath, licenseKey, outputPath);
         return JsonNode.Parse(jsonStr)!.AsObject();
     }
 }

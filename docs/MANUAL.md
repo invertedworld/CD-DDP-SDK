@@ -123,11 +123,11 @@ pip install -e /path/to/ddp-sdk/python
 from ddp_sdk import process, process_from_bytes, EngineError
 
 # From path (directory or ZIP)
-metadata = process("/path/to/ddp", "/path/to/output", "your-api-key")
+metadata = process("/path/to/ddp", "/path/to/output", "your-license-key")
 
 # From in-memory files — writes to output path, returns metadata
 files = {"DDPID": ..., "PQDESCR": ..., "DDPMS": ...}
-metadata = process_from_bytes(files, "/path/to/output", "your-api-key")
+metadata = process_from_bytes(files, "/path/to/output", "your-license-key")
 # WAVs written to /path/to/output/track_01.wav, etc.
 ```
 
@@ -153,11 +153,11 @@ npm run build
 import { process, processFromBytes, EngineError } from "ddp-sdk";
 
 // From path
-const metadata = await process("/path/to/ddp", "/path/to/output", "your-api-key");
+const metadata = await process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files — writes to output path, returns metadata
 const files = { DDPID: ..., PQDESCR: ..., DDPMS: ... };
-const metadata = await processFromBytes(files, "/path/to/output", "your-api-key");
+const metadata = await processFromBytes(files, "/path/to/output", "your-license-key");
 ```
 
 For Python/TypeScript in serverless: include the `ddp` binary in your deployment (e.g. Lambda layer or container) and set `DDP_SDK_BIN` to its path. See [Memory and resource requirements](#memory-and-resource-requirements) for sizing.
@@ -180,11 +180,11 @@ dotnet add reference /path/to/ddp-sdk/csharp/DDPEngine/DDPEngine.csproj
 using DDPEngine;
 
 // From path
-var metadata = DDPEngine.DDPEngine.Process("/path/to/ddp", "/path/to/output", "your-api-key");
+var metadata = DDPEngine.DDPEngine.Process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files — writes to output path, returns metadata
 var files = new Dictionary<string, byte[]> { ["DDPID"] = ..., ["PQDESCR"] = ..., ["DDPMS"] = ... };
-var metadata = DDPEngine.DDPEngine.ProcessFromBytes(files, "/path/to/output", "your-api-key");
+var metadata = DDPEngine.DDPEngine.ProcessFromBytes(files, "/path/to/output", "your-license-key");
 ```
 
 Throws `EngineError` on failure.
@@ -212,7 +212,7 @@ import ddp.engine.DDPEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 
 // From path
-JsonNode metadata = DDPEngine.process("/path/to/ddp", "/path/to/output", "your-api-key");
+JsonNode metadata = DDPEngine.process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files
 var files = Map.of(
@@ -220,7 +220,7 @@ var files = Map.of(
     "PQDESCR", Files.readAllBytes(Path.of("PQDESCR")),
     "DDPMS", Files.readAllBytes(Path.of("DDPMS"))
 );
-var metadata = DDPEngine.processFromBytes(files, "/path/to/output", "your-api-key");
+var metadata = DDPEngine.processFromBytes(files, "/path/to/output", "your-license-key");
 // WAVs written to output path
 ```
 
@@ -244,7 +244,7 @@ Process DDP from a path and return metadata JSON in memory (no file writes).
 ```rust
 use ddp_sdk::process_to_json;
 
-let metadata_json = process_to_json("/path/to/ddp", "your-api-key").await?;
+let metadata_json = process_to_json("/path/to/ddp", "your-license-key").await?;
 // metadata_json: String (pretty-printed JSON)
 ```
 
@@ -261,7 +261,7 @@ files.insert("DDPID".into(), ddpid_bytes);
 files.insert("PQDESCR".into(), pqdescr_bytes);
 files.insert("DDPMS".into(), audio_bytes);
 
-let result = process_from_bytes(&files, "/path/to/output", "your-api-key").await?;
+let result = process_from_bytes(&files, "/path/to/output", "your-license-key").await?;
 // result.metadata: DDPDisc, result.wav_files: Vec<String>
 ```
 
@@ -275,7 +275,7 @@ use ddp_sdk::process;
 let result = process(
     "/path/to/ddp/directory",  // or /path/to/ddp.zip
     "/path/to/output/dir",
-    "your-api-key",
+    "your-license-key",
 ).await?;
 
 println!("Tracks: {}", result.metadata.tracks.len());
@@ -310,7 +310,7 @@ use ddp_sdk::process_from_bytes;
 
 #[derive(Deserialize)]
 struct Request {
-    api_key: String,
+    license_key: String,
     ddp_zip_base64: String,
 }
 
@@ -326,7 +326,7 @@ async fn handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
         &event.payload.ddp_zip_base64,
     )?;
     let files = extract_zip_to_map(&zip_bytes)?;
-    let result = process_from_bytes(&files, "/tmp/ddp-out", &event.payload.api_key).await?;
+    let result = process_from_bytes(&files, "/tmp/ddp-out", &event.payload.license_key).await?;
     let metadata_json = serde_json::to_string_pretty(&result.metadata)?;
     Ok(Response { metadata_json, track_count: result.metadata.tracks.len() as u32 })
 }
@@ -384,7 +384,7 @@ serde_json = "1"
 zip = "2"
 ```
 
-**2. Handler:** Accept DDP ZIP in the request body, extract to `HashMap<String, Vec<u8>>`, call `process_from_bytes(&files, output_path, &api_key).await`, return metadata JSON. Use license key from `DDP_LICENSE_KEY` (app setting) or a request header.
+**2. Handler:** Accept DDP ZIP in the request body, extract to `HashMap<String, Vec<u8>>`, call `process_from_bytes(&files, output_path, &license_key).await`, return metadata JSON. Use license key from `DDP_LICENSE_KEY` (app setting) or a request header.
 
 **3. host.json:**
 ```json
@@ -414,7 +414,7 @@ cargo build --release --target x86_64-unknown-linux-gnu
 
 ## Error Handling
 
-- **InvalidApiKey:** Key missing, invalid, or expired. Obtain a new key from the publisher.
+- **InvalidLicenseKey:** License key missing, invalid, or expired. Obtain a new key from the publisher.
 - **Parse:** Invalid or incomplete DDP data.
 - **MissingFile:** Required DDP file absent.
 - **Io:** File system error.

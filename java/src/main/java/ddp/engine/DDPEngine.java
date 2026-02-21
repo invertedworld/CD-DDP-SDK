@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * Thin wrapper around the ddp binary.
- * API key validation and parsing run in native code.
+ * License key validation and parsing run in native code.
  */
 public final class DDPEngine {
     private static final String DEFAULT_BIN = "ddp";
@@ -23,14 +23,14 @@ public final class DDPEngine {
         return env != null ? env : DEFAULT_BIN;
     }
 
-    private static void runDDP(String inputPath, String outputPath, String apiKey) throws IOException {
+    private static void runDDP(String inputPath, String outputPath, String licenseKey) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(
                 findDDP(),
                 "process",
                 inputPath,
                 outputPath,
                 "--license-key",
-                apiKey
+                licenseKey
         );
         pb.redirectErrorStream(true); // merge stderr into stdout to avoid deadlock
         Process proc = pb.start();
@@ -47,13 +47,13 @@ public final class DDPEngine {
         }
     }
 
-    private static String runDDPJson(String inputPath, String apiKey, String outputPath) throws IOException {
+    private static String runDDPJson(String inputPath, String licenseKey, String outputPath) throws IOException {
         List<String> args = new ArrayList<>();
         args.add(findDDP());
         args.add("json");
         args.add(inputPath);
         args.add("--license-key");
-        args.add(apiKey);
+        args.add(licenseKey);
         if (outputPath != null) {
             args.add("--output");
             args.add(outputPath);
@@ -80,9 +80,9 @@ public final class DDPEngine {
 
     /**
      * Process DDP from in-memory files. Writes metadata and WAVs to outputPath.
-     * API key validation runs in the native binary. Returns metadata object.
+     * License key validation runs in the native binary. Returns metadata object.
      */
-    public static JsonNode processFromBytes(Map<String, byte[]> files, String outputPath, String apiKey) throws IOException {
+    public static JsonNode processFromBytes(Map<String, byte[]> files, String outputPath, String licenseKey) throws IOException {
         Path inDir = Files.createTempDirectory("ddp-in-");
         try {
             for (Map.Entry<String, byte[]> e : files.entrySet()) {
@@ -90,7 +90,7 @@ public final class DDPEngine {
                 Files.write(inDir.resolve(filename), e.getValue());
             }
             String outBase = outputPath.replaceAll("[/\\\\]+$", "");
-            runDDP(inDir.toString(), outBase, apiKey);
+            runDDP(inDir.toString(), outBase, licenseKey);
 
             String metaJson = Files.readString(Path.of(outBase, "metadata.json"));
             return JSON.readTree(metaJson);
@@ -101,29 +101,29 @@ public final class DDPEngine {
 
     /**
      * Process DDP from a path (directory or ZIP). Invokes ddp binary.
-     * API key validation runs in the native binary.
+     * License key validation runs in the native binary.
      * Returns the metadata object (metadata.json contents).
      */
-    public static JsonNode process(String inputPath, String outputPath, String apiKey) throws IOException {
+    public static JsonNode process(String inputPath, String outputPath, String licenseKey) throws IOException {
         String outBase = outputPath.replaceAll("[/\\\\]+$", "");
-        runDDP(inputPath, outBase, apiKey);
+        runDDP(inputPath, outBase, licenseKey);
         String metaJson = Files.readString(Path.of(outBase, "metadata.json"));
         return JSON.readTree(metaJson);
     }
 
     /**
      * Extract metadata JSON only (no WAV files). Invokes ddp binary.
-     * API key validation runs in the native binary.
+     * License key validation runs in the native binary.
      * Returns the metadata object. If outputPath is non-null, also writes metadata.json there.
      */
-    public static JsonNode processToJson(String inputPath, String apiKey, String outputPath) throws IOException {
-        String jsonStr = runDDPJson(inputPath, apiKey, outputPath);
+    public static JsonNode processToJson(String inputPath, String licenseKey, String outputPath) throws IOException {
+        String jsonStr = runDDPJson(inputPath, licenseKey, outputPath);
         return JSON.readTree(jsonStr);
     }
 
-    /** Same as processToJson(inputPath, apiKey, null) — metadata only, no file write. */
-    public static JsonNode processToJson(String inputPath, String apiKey) throws IOException {
-        return processToJson(inputPath, apiKey, null);
+    /** Same as processToJson(inputPath, licenseKey, null) — metadata only, no file write. */
+    public static JsonNode processToJson(String inputPath, String licenseKey) throws IOException {
+        return processToJson(inputPath, licenseKey, null);
     }
 
     private static void deleteRecursive(Path p) {

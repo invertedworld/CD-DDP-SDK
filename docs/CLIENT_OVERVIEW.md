@@ -110,12 +110,12 @@ ddp process /path/to/ddp /path/to/output --license-key "your-token"
 from ddp_sdk import process, process_from_bytes
 
 # From path
-result = process("/path/to/ddp", "/path/to/output", "your-api-key")
+result = process("/path/to/ddp", "/path/to/output", "your-license-key")
 print(result.metadata.tracks)
 
 # From in-memory files (e.g. from S3, upload, etc.)
 files = {"DDPID": ..., "PQDESCR": ..., "DDPMS": ...}
-disc, wavs = process_from_bytes(files, "your-api-key")
+disc, wavs = process_from_bytes(files, "your-license-key")
 # wavs: [("track_01.wav", bytes), ...]
 ```
 
@@ -124,8 +124,8 @@ disc, wavs = process_from_bytes(files, "your-api-key")
 ```typescript
 import { process, processFromBytes } from "ddp-sdk";
 
-const result = await process("/path/to/ddp", "/path/to/output", "your-api-key");
-// or processFromBytes(files, "your-api-key") for in-memory
+const result = await process("/path/to/ddp", "/path/to/output", "your-license-key");
+// or processFromBytes(files, "your-license-key") for in-memory
 ```
 
 ---
@@ -157,7 +157,7 @@ Contact the publisher for evaluation keys and support.
 
 - **Manual** — integration guide, API reference, cloud deployment examples
 - **Admin guide** — for publishers who issue keys (if applicable)
-- **Error handling** — clear error types: InvalidApiKey, Parse, MissingFile, Io, Storage
+- **Error handling** — clear error types: InvalidLicenseKey, Parse, MissingFile, Io, Storage
 
 ---
 

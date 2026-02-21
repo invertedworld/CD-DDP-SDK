@@ -1,6 +1,6 @@
 /**
  * DDP SDK client — thin wrapper around the ddp binary.
- * API key validation and parsing run in native code.
+ * License key validation and parsing run in native code.
  */
 
 import { execFile } from "child_process";
@@ -72,12 +72,12 @@ async function runDDPJson(
 
 /**
  * Process DDP from in-memory files. Writes metadata and WAVs to outputPath.
- * API key validation runs in the native binary. Returns metadata object.
+ * License key validation runs in the native binary. Returns metadata object.
  */
 export async function processFromBytes(
   files: Record<string, Buffer | Uint8Array>,
   outputPath: string,
-  apiKey: string
+  licenseKey: string
 ): Promise<object> {
   const inDir = await fs.mkdtemp(path.join(os.tmpdir(), "ddp-in-"));
   try {
@@ -88,7 +88,7 @@ export async function processFromBytes(
     }
 
     const outBase = outputPath.replace(/\/$/, "");
-    await runDDP(inDir, outBase, apiKey);
+    await runDDP(inDir, outBase, licenseKey);
     const metaPath = path.join(outBase, "metadata.json");
     const metaJson = await fs.readFile(metaPath, "utf-8");
     return JSON.parse(metaJson) as object;
@@ -99,16 +99,16 @@ export async function processFromBytes(
 
 /**
  * Process DDP from a path (directory or ZIP). Invokes ddp binary.
- * API key validation runs in the native binary.
+ * License key validation runs in the native binary.
  * Returns the metadata object (metadata.json contents).
  */
 export async function process(
   inputPath: string,
   outputPath: string,
-  apiKey: string
+  licenseKey: string
 ): Promise<object> {
   const outBase = outputPath.replace(/\/$/, "");
-  await runDDP(inputPath, outBase, apiKey);
+  await runDDP(inputPath, outBase, licenseKey);
   const metaPath = path.join(outBase, "metadata.json");
   const metaJson = await fs.readFile(metaPath, "utf-8");
   return JSON.parse(metaJson) as object;
@@ -116,17 +116,17 @@ export async function process(
 
 /**
  * Extract metadata JSON only (no WAV files). Invokes ddp binary.
- * API key validation runs in the native binary.
+ * License key validation runs in the native binary.
  * Returns the metadata object. If outputPath is given, also writes metadata.json there.
  */
 export async function processToJson(
   inputPath: string,
-  apiKey: string,
+  licenseKey: string,
   options?: { outputPath?: string }
 ): Promise<object> {
   const jsonStr = await runDDPJson(
     inputPath,
-    apiKey,
+    licenseKey,
     options?.outputPath
   );
   return JSON.parse(jsonStr) as object;

@@ -39,7 +39,7 @@ import ddp.engine.DDPEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 
 // From path
-JsonNode metadata = DDPEngine.process("/path/to/ddp", "/path/to/output", "your-api-key");
+JsonNode metadata = DDPEngine.process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files
 var files = Map.of(
@@ -47,6 +47,6 @@ var files = Map.of(
     "PQDESCR", Files.readAllBytes(Path.of("PQDESCR")),
     "DDPMS", Files.readAllBytes(Path.of("DDPMS"))
 );
-var result = DDPEngine.processFromBytes(files, "your-api-key");
+var result = DDPEngine.processFromBytes(files, "your-license-key");
 // result.metadata() -> JsonNode, result.wavs() -> List<WavEntry>
 ```

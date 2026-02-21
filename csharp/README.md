@@ -24,7 +24,7 @@ Or install from NuGet when published.
 using DDPEngine;
 
 // From path
-var metadata = DDPEngine.DDPEngine.Process("/path/to/ddp", "/path/to/output", "your-api-key");
+var metadata = DDPEngine.DDPEngine.Process("/path/to/ddp", "/path/to/output", "your-license-key");
 
 // From in-memory files
 var files = new Dictionary<string, byte[]>
@@ -33,6 +33,6 @@ var files = new Dictionary<string, byte[]>
     ["PQDESCR"] = File.ReadAllBytes("PQDESCR"),
     ["DDPMS"] = File.ReadAllBytes("DDPMS"),
 };
-var (meta, wavs) = DDPEngine.DDPEngine.ProcessFromBytes(files, "your-api-key");
+var (meta, wavs) = DDPEngine.DDPEngine.ProcessFromBytes(files, "your-license-key");
 // wavs: [(Name, Data), ...]
 ```

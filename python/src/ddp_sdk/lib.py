@@ -1,4 +1,4 @@
-"""Thin wrapper around the ddp binary. All parsing and API key validation run natively."""
+"""Thin wrapper around the ddp binary. All parsing and License key validation run natively."""
 
 import json
 import os
@@ -54,11 +54,11 @@ def _run_ddp_json(
 def process_from_bytes(
     files: Dict[str, bytes],
     output_path: str,
-    api_key: str,
+    license_key: str,
 ) -> dict:
     """
     Process DDP from in-memory files. Writes metadata and WAVs to output_path.
-    API key validation runs in the native binary. Returns metadata dict.
+    License key validation runs in the native binary. Returns metadata dict.
     """
     with tempfile.TemporaryDirectory(prefix="ddp-in-") as in_dir:
         for name, data in files.items():
@@ -67,7 +67,7 @@ def process_from_bytes(
             with open(path, "wb") as f:
                 f.write(data)
 
-        _run_ddp(in_dir, output_path.rstrip("/"), api_key)
+        _run_ddp(in_dir, output_path.rstrip("/"), license_key)
         meta_path = os.path.join(output_path.rstrip("/"), "metadata.json")
         with open(meta_path, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -76,14 +76,14 @@ def process_from_bytes(
 def process(
     input_path: str,
     output_path: str,
-    api_key: str,
+    license_key: str,
 ) -> dict:
     """
     Process DDP from a path (directory or ZIP). Invokes ddp binary.
-    API key validation runs in the native binary.
+    License key validation runs in the native binary.
     Returns the metadata dict (metadata.json contents).
     """
-    _run_ddp(input_path, output_path, api_key)
+    _run_ddp(input_path, output_path, license_key)
     meta_path = os.path.join(output_path.rstrip("/"), "metadata.json")
     with open(meta_path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -91,14 +91,14 @@ def process(
 
 def process_to_json(
     input_path: str,
-    api_key: str,
+    license_key: str,
     *,
     output_path: str | None = None,
 ) -> dict:
     """
     Extract metadata JSON only (no WAV files). Invokes ddp binary.
-    API key validation runs in the native binary.
+    License key validation runs in the native binary.
     Returns the metadata dict. If output_path is given, also writes metadata.json there.
     """
-    json_str = _run_ddp_json(input_path, api_key, output_path)
+    json_str = _run_ddp_json(input_path, license_key, output_path)
     return json.loads(json_str)

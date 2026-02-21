@@ -25,10 +25,10 @@ Or: `make venv && source .venv/bin/activate && make install`
 from ddp_sdk import process, process_from_bytes
 
 # From path
-metadata = process("/path/to/ddp", "/path/to/output", "your-api-key")
+metadata = process("/path/to/ddp", "/path/to/output", "your-license-key")
 
 # From in-memory files (writes temp dir, invokes binary)
 files = {"DDPID": b"...", "PQDESCR": b"...", "DDPMS": b"..."}
-metadata, wavs = process_from_bytes(files, "your-api-key")
+metadata, wavs = process_from_bytes(files, "your-license-key")
 # wavs: [("track_01.wav", bytes), ...]
 ```

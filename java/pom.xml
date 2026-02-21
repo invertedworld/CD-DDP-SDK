@@ -8,7 +8,7 @@
     <artifactId>ddp-sdk</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <description>DDP SDK client - thin wrapper around the ddp binary. API key validation runs in native code.</description>
+    <description>DDP SDK client - thin wrapper around the ddp binary. License key validation runs in native code.</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

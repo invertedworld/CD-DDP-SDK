@@ -5,7 +5,7 @@
     <RootNamespace>DDPEngine</RootNamespace>
     <PackageId>DDPEngine</PackageId>
     <Version>1.0.0</Version>
-    <Description>DDP SDK client - thin wrapper around the ddp binary. API key validation runs in native code.</Description>
+    <Description>DDP SDK client - thin wrapper around the ddp binary. License key validation runs in native code.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Nullable>enable</Nullable>

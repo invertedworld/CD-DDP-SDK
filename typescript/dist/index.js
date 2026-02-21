@@ -1,7 +1,7 @@
 "use strict";
 /**
  * DDP SDK client — thin wrapper around the ddp binary.
- * API key validation and parsing run in native code.
+ * License key validation and parsing run in native code.
  */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -59,7 +59,7 @@ class EngineError extends Error {
     }
 }
 exports.EngineError = EngineError;
-async function runDdp(inputPath, outputPath, apiKey) {
+async function runDdp(inputPath, outputPath, licenseKey) {
     try {
         await execFileAsync(findDdp(), ["process", inputPath, outputPath, "--license-key", licenseKey], {
             encoding: "utf-8",
@@ -72,7 +72,7 @@ async function runDdp(inputPath, outputPath, apiKey) {
         throw new EngineError(msg, stderr);
     }
 }
-async function runDdpJson(inputPath, apiKey, outputPath) {
+async function runDdpJson(inputPath, licenseKey, outputPath) {
     const args = ["json", inputPath, "--license-key", licenseKey];
     if (outputPath !== undefined) {
         args.push("--output", outputPath);
@@ -96,9 +96,9 @@ async function runDdpJson(inputPath, apiKey, outputPath) {
 }
 /**
  * Process DDP from in-memory files. Writes to temp dir, invokes ddp binary, returns results.
- * API key validation runs in the native binary.
+ * License key validation runs in the native binary.
  */
-async function processFromBytes(files, apiKey) {
+async function processFromBytes(files, licenseKey) {
     const inDir = await fs.mkdtemp(path.join(os.tmpdir(), "ddp-in-"));
     try {
         for (const [name, data] of Object.entries(files)) {
@@ -107,7 +107,7 @@ async function processFromBytes(files, apiKey) {
         }
         const outDir = await fs.mkdtemp(path.join(os.tmpdir(), "ddp-out-"));
         try {
-            await runDdp(inDir, outDir, apiKey);
+            await runDdp(inDir, outDir, licenseKey);
             const metaPath = path.join(outDir, "metadata.json");
             const metaJson = await fs.readFile(metaPath, "utf-8");
             const metadata = JSON.parse(metaJson);
@@ -131,21 +131,21 @@ async function processFromBytes(files, apiKey) {
 }
 /**
  * Process DDP from a path (directory or ZIP). Invokes ddp binary.
- * API key validation runs in the native binary.
+ * License key validation runs in the native binary.
  * Returns the metadata object (metadata.json contents).
  */
-async function process(inputPath, outputPath, apiKey) {
-    await runDdp(inputPath, outputPath.replace(/\/$/, ""), apiKey);
+async function process(inputPath, outputPath, licenseKey) {
+    await runDdp(inputPath, outputPath.replace(/\/$/, ""), licenseKey);
     const metaPath = path.join(outputPath.replace(/\/$/, ""), "metadata.json");
     const metaJson = await fs.readFile(metaPath, "utf-8");
     return JSON.parse(metaJson);
 }
 /**
  * Extract metadata JSON only (no WAV files). Invokes ddp binary.
- * API key validation runs in the native binary.
+ * License key validation runs in the native binary.
  * Returns the metadata object. If outputPath is given, also writes metadata.json there.
  */
-async function processToJson(inputPath, apiKey, options) {
-    const jsonStr = await runDdpJson(inputPath, apiKey, options?.outputPath);
+async function processToJson(inputPath, licenseKey, options) {
+    const jsonStr = await runDdpJson(inputPath, licenseKey, options?.outputPath);
     return JSON.parse(jsonStr);
 }
