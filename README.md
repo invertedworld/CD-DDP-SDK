@@ -44,7 +44,7 @@ This repository contains the distribution for end users: language wrappers and d
 
 ## Contents
 
-- **`docs/`** — [Manual](docs/MANUAL.md), [Client Overview](docs/CLIENT_OVERVIEW.md), [Manifest schema](docs/MANIFEST.md)
+- **`docs/`** — [Manual](docs/MANUAL.md), [Client Overview](docs/CLIENT_OVERVIEW.md), [Manifest schema](docs/MANIFEST.md), [OEM embedding](docs/OEM.md)
 - **`LICENSE_AGREEMENT.md`** — License terms, including DDP trademark and logo attribution requirements
 - **`assets/ddp.png`** — DDP logo (required for attribution in software that implements DDP)
 - **`python/`** — Python wrapper (`pip install -e python`)
@@ -79,3 +79,8 @@ ddpbuild build extract/metadata.json rebuilt/
 
 See [docs/MANUAL.md](docs/MANUAL.md) for full documentation and
 [docs/MANIFEST.md](docs/MANIFEST.md) for the manifest schema.
+
+**Embedding DDP writing in your own application?** The wrappers above spawn the `ddpbuild`
+binary. If you would rather ship DDP writing *inside* your application — no separate
+install, no licence key for your users, and support for sandboxed apps — see
+[docs/OEM.md](docs/OEM.md).

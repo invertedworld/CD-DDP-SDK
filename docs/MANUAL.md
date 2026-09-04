@@ -146,6 +146,9 @@ what the language wrappers read.
 **Writing is a separate entitlement.** A reader licence is refused, and the error names
 the entitlement that is missing. Ask the publisher for a build licence.
 
+To embed DDP writing inside your own application rather than shipping a binary
+alongside it, see [OEM.md](OEM.md).
+
 ### The manifest
 
 One JSON document describes the disc. See **[MANIFEST.md](MANIFEST.md)** for the full
