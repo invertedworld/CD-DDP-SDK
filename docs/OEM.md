@@ -2,14 +2,8 @@
 
 For integrators shipping DDP writing inside their own application.
 
-The wrappers in this repository spawn the `ddpbuild` binary. That is the right shape
-for a tool a customer installs, and the wrong shape for an application a customer
-installs *once*, with DDP writing simply part of it. For that there is an embeddable
-library: it lives inside your application bundle, runs in your process, and your users
-never install anything or see a licence key.
-
-It also covers the case the binary cannot: a sandboxed application, which is not
-permitted to launch an arbitrary executable at all.
+A sandboxed application cannot launch an arbitrary executable at all, so embedding is
+the only option there.
 
 ## Which form
 
