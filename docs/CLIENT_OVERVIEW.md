@@ -6,6 +6,14 @@
 
 ## 1. What DDP SDK Does
 
+The SDK works in both directions: it **reads** a DDP master into WAV audio and
+structured metadata, and it **writes** a DDP master from WAV audio and that same
+metadata. Because both sides share one schema, a disc can be taken apart and put back
+together byte for byte — checksums included.
+
+Reading and writing are licensed separately.
+
+
 DDP SDK turns **DDP mastering filesets** into:
 
 - **metadata.json** — disc structure, track times, ISRC codes, durations
@@ -79,13 +87,20 @@ You run the binary or call the library; validation happens in-process. Typically
 
 ### Binary
 
-- **Platforms:** macOS, Linux, Windows (x86_64, ARM64 where supported)
-- **Dependencies:** None — static binary
-- **Size:** Small (stripped release build)
+- **Platforms:**
+
+  | Platform | Architectures | Notes |
+  |---|---|---|
+  | macOS | Apple Silicon + Intel | one universal binary |
+  | Linux | x86_64, ARM64 | statically linked against musl — runs on Alpine and older distributions |
+  | Windows | x86_64 | |
+
+- **Dependencies:** None. The Linux builds are statically linked, so there is no glibc or OpenSSL requirement.
+- **Size:** Small (stripped release build), around 2 MB per binary.
 
 ### Wrappers (Python, Node, C#, Java)
 
-- Python 3.x, Node 18+, .NET 6+, Java 17+
+- Python 3.9+, Node 18+, .NET 8+ (LTS), Java 17+
 - Binary must be in PATH or `DDP_SDK_BIN` set to its path
 - For serverless: bundle binary in deployment (Lambda layer, container, etc.)
 
@@ -98,6 +113,16 @@ You run the binary or call the library; validation happens in-process. Typically
 ## 6. Quick Start
 
 ### CLI
+
+Writing a disc:
+
+```bash
+ddpbuild validate album.json
+ddpbuild build album.json /path/to/output --license-key "your-build-token"
+# → DDPID, DDPMS, PQDESCR, IMAGE.DAT, CDTEXT.BIN, IDENT.TXT, CHECKSUM.MD5
+```
+
+Reading a disc:
 
 ```bash
 ddp process /path/to/ddp /path/to/output --license-key "your-token"

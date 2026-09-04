@@ -1,4 +1,9 @@
-"""Thin wrapper around the ddp binary. All parsing and License key validation run natively."""
+"""Thin wrappers around the ddp and ddpbuild binaries.
+
+`process` and friends read a DDP; `build` writes one. All parsing, writing and
+licence validation run in native code. Reading and writing are separate
+entitlements, so each takes its own licence key.
+"""
 
 import json
 import os
@@ -7,10 +12,11 @@ import tempfile
 from typing import Dict
 
 DDP_BIN = "ddp"
+DDPBUILD_BIN = "ddpbuild"
 
 
 class EngineError(Exception):
-    """Raised when the ddp binary fails."""
+    """Raised when the ddp or ddpbuild binary fails."""
 
     def __init__(self, message: str, stderr: str = ""):
         self.message = message
@@ -19,8 +25,23 @@ class EngineError(Exception):
 
 
 def _find_ddp() -> str:
-    """Path to ddp binary. Use DDP_SDK_BIN env to override."""
+    """Path to the ddp binary. Use DDP_SDK_BIN env to override."""
     return os.environ.get("DDP_SDK_BIN", DDP_BIN)
+
+
+def _find_ddpbuild() -> str:
+    """Path to the ddpbuild binary. Use DDP_BUILD_BIN env to override."""
+    return os.environ.get("DDP_BUILD_BIN", DDPBUILD_BIN)
+
+
+def _run(cmd: list) -> str:
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise EngineError(
+            result.stderr or result.stdout or f"{cmd[0]} exited with code {result.returncode}",
+            stderr=result.stderr or "",
+        )
+    return result.stdout
 
 
 def _run_ddp(input_path: str, output_path: str, license_key: str) -> None:
@@ -102,3 +123,50 @@ def process_to_json(
     """
     json_str = _run_ddp_json(input_path, license_key, output_path)
     return json.loads(json_str)
+
+
+def build(
+    manifest_path: str,
+    output_path: str,
+    license_key: str,
+    *,
+    strict: bool = False,
+    write_ident: bool = True,
+    write_checksum: bool = True,
+) -> dict:
+    """
+    Build a DDP fileset from a manifest and the WAVs it names. Invokes the
+    ddpbuild binary; licence validation runs natively.
+
+    The manifest is the same document `process` writes as metadata.json, so a
+    disc that was read can be rebuilt without translating anything. Track paths
+    inside it resolve relative to the manifest.
+
+    Building requires the `ddp:build` entitlement, which is separate from the
+    reader's. A reader licence is refused, and says which entitlement is missing.
+
+    Returns the build report: the files written with their MD5s, the track
+    layout, the lead-out, and any warnings.
+    """
+    cmd = [
+        _find_ddpbuild(), "build", manifest_path, output_path,
+        "--json", "--license-key", license_key,
+    ]
+    if strict:
+        cmd.append("--strict")
+    if not write_ident:
+        cmd.append("--no-ident")
+    if not write_checksum:
+        cmd.append("--no-checksum")
+    return json.loads(_run(cmd))
+
+
+def validate(manifest_path: str, *, strict: bool = False) -> str:
+    """
+    Check a manifest and the audio it names, and return the disc layout as text.
+    Writes nothing, and needs no licence key: planning a disc is free.
+    """
+    cmd = [_find_ddpbuild(), "validate", manifest_path]
+    if strict:
+        cmd.append("--strict")
+    return _run(cmd)

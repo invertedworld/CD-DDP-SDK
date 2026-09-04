@@ -1,12 +1,12 @@
 # DDP SDK (C#)
 
-Thin wrapper around the `ddp` binary. License key validation and DDP parsing run in native code.
+Thin wrapper around the `ddp` and `ddpbuild` binaries. License key validation and DDP parsing run in native code.
 
 See the [unified manual](../docs/MANUAL.md) for full documentation.
 
 ## Requirements
 
-- .NET 6.0+
+- .NET 8.0 (LTS) or later
 - `ddp` binary in PATH (or set `DDP_SDK_BIN` to its path)
 
 ## Install

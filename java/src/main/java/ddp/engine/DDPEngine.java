@@ -8,11 +8,15 @@ import java.nio.file.*;
 import java.util.*;
 
 /**
- * Thin wrapper around the ddp binary.
- * License key validation and parsing run in native code.
+ * Thin wrappers around the ddp and ddpbuild binaries.
+ *
+ * <p>{@code process} and friends read a DDP; {@code build} writes one. Licence
+ * validation, parsing and writing all run in native code. Reading and writing are
+ * separate entitlements, so each takes its own licence key.
  */
 public final class DDPEngine {
     private static final String DEFAULT_BIN = "ddp";
+    private static final String DEFAULT_BUILD_BIN = "ddpbuild";
     private static final ObjectMapper JSON = new ObjectMapper();
 
     private DDPEngine() {
@@ -21,6 +25,94 @@ public final class DDPEngine {
     private static String findDDP() {
         String env = System.getenv("DDP_SDK_BIN");
         return env != null ? env : DEFAULT_BIN;
+    }
+
+    private static String findDDPBuild() {
+        String env = System.getenv("DDP_BUILD_BIN");
+        return env != null ? env : DEFAULT_BUILD_BIN;
+    }
+
+    /**
+     * Run ddpbuild, keeping stdout clean. Progress goes to stderr, so the streams
+     * cannot be merged the way the reader's are without corrupting the JSON report;
+     * stderr goes to a temp file instead, which also avoids a full-pipe deadlock.
+     */
+    private static String runDDPBuild(List<String> args) throws IOException {
+        Path errFile = Files.createTempFile("ddpbuild-err-", ".txt");
+        try {
+            ProcessBuilder pb = new ProcessBuilder(args);
+            pb.redirectError(errFile.toFile());
+            Process proc = pb.start();
+            String stdout = new String(proc.getInputStream().readAllBytes());
+            int code;
+            try {
+                code = proc.waitFor();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new EngineError("Interrupted: " + e.getMessage());
+            }
+            String stderr = Files.readString(errFile);
+            if (code != 0) {
+                throw new EngineError(stderr.isEmpty() ? stdout : stderr, stderr);
+            }
+            return stdout;
+        } finally {
+            Files.deleteIfExists(errFile);
+        }
+    }
+
+    /**
+     * Build a DDP fileset from a manifest and the WAVs it names. Invokes the
+     * ddpbuild binary; licence validation runs natively.
+     *
+     * <p>The manifest is the same document {@link #process} writes as metadata.json,
+     * so a disc that was read can be rebuilt without translating anything. Track
+     * paths inside it resolve relative to the manifest.
+     *
+     * <p>Building requires the {@code ddp:build} entitlement, which is separate from
+     * the reader's. A reader licence is refused, and says which entitlement is missing.
+     *
+     * @return the build report: files written with their MD5s, the track layout,
+     *         the lead-out, and any warnings.
+     */
+    public static JsonNode build(String manifestPath, String outputPath, String licenseKey)
+            throws IOException {
+        return build(manifestPath, outputPath, licenseKey, false, true, true);
+    }
+
+    /** As {@link #build(String, String, String)}, controlling the optional outputs. */
+    public static JsonNode build(
+            String manifestPath,
+            String outputPath,
+            String licenseKey,
+            boolean strict,
+            boolean writeIdent,
+            boolean writeChecksum) throws IOException {
+        List<String> args = new ArrayList<>(List.of(
+                findDDPBuild(), "build", manifestPath, outputPath,
+                "--json", "--license-key", licenseKey));
+        if (strict) {
+            args.add("--strict");
+        }
+        if (!writeIdent) {
+            args.add("--no-ident");
+        }
+        if (!writeChecksum) {
+            args.add("--no-checksum");
+        }
+        return JSON.readTree(runDDPBuild(args));
+    }
+
+    /**
+     * Check a manifest and the audio it names, returning the disc layout as text.
+     * Writes nothing, and needs no licence key: planning a disc is free.
+     */
+    public static String validate(String manifestPath, boolean strict) throws IOException {
+        List<String> args = new ArrayList<>(List.of(findDDPBuild(), "validate", manifestPath));
+        if (strict) {
+            args.add("--strict");
+        }
+        return runDDPBuild(args);
     }
 
     private static void runDDP(String inputPath, String outputPath, String licenseKey) throws IOException {

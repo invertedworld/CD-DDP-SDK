@@ -20,3 +20,8 @@ node_modules/
 
 # OS
 .DS_Store
+
+# Build artefacts from compiling the wrappers locally
+csharp/**/bin/
+csharp/**/obj/
+java/target/

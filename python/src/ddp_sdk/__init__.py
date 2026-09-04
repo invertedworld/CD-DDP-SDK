@@ -1,6 +1,20 @@
-# DDP SDK client - thin wrapper around the ddp binary.
-# License key validation and parsing run in native code.
+# DDP SDK client - thin wrappers around the ddp and ddpbuild binaries.
+# Licence validation, parsing and writing run in native code.
 
-from .lib import EngineError, process, process_from_bytes, process_to_json
+from .lib import (
+    EngineError,
+    build,
+    process,
+    process_from_bytes,
+    process_to_json,
+    validate,
+)
 
-__all__ = ["EngineError", "process", "process_from_bytes", "process_to_json"]
+__all__ = [
+    "EngineError",
+    "build",
+    "process",
+    "process_from_bytes",
+    "process_to_json",
+    "validate",
+]

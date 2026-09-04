@@ -8,9 +8,13 @@ You receive a license key from the publisher when you sign up. The binary valida
 
 ---
 
-## Installing the ddp Binary
+## Installing the Binaries
 
 The publisher provides the `ddp` executable. Install it first — the Python, TypeScript, C#, and Java wrappers depend on it.
+
+Binaries are provided for macOS (one universal binary covering Apple Silicon and
+Intel), Linux x86_64 and ARM64 (statically linked, no glibc requirement), and Windows
+x86_64. Ask the publisher if you need a platform not listed.
 
 1. Copy the binary to a directory in your PATH:
    - **macOS/Linux:** `~/bin/`, `/usr/local/bin/`, or `~/.local/bin/`
@@ -28,7 +32,20 @@ The publisher provides the `ddp` executable. Install it first — the Python, Ty
 
 ---
 
-## License Key
+## Licence Keys
+
+Reading and writing are separate entitlements, issued as separate keys.
+
+| Task | Binary | Key | Environment variable |
+|---|---|---|---|
+| Read a DDP | `ddp` | reader licence | `DDP_LICENSE_KEY` |
+| Write a DDP | `ddpbuild` | build licence (`ddp:build`) | `DDP_BUILD_LICENSE_KEY` |
+
+A reader licence presented to `ddpbuild` is refused by entitlement, not by signature,
+and the error names what is missing. Binary paths can be overridden with `DDP_SDK_BIN`
+and `DDP_BUILD_BIN`.
+
+### Detail
 
 Store your license key securely. Expired keys are rejected — contact the publisher for a new key.
 
@@ -97,11 +114,106 @@ When using paths (`process(input_dir, output_dir, ...)`), the binary loads DDPMS
 
 ## CLI
 
+Reading:
+
 ```bash
 ddp process <input_dir> <output_dir> [--license-key <token>]
+ddp json    <input_dir> [--output <file>] [--license-key <token>]
 ```
 
 If `--license-key` is omitted, `DDP_LICENSE_KEY` must be set.
+
+Writing:
+
+```bash
+ddpbuild validate <manifest.json> [--strict]
+ddpbuild build    <manifest.json> <output_dir> [--license-key <token>] [--json]
+                                  [--strict] [--no-ident] [--no-checksum] [--dry-run]
+```
+
+If `--license-key` is omitted, `DDP_BUILD_LICENSE_KEY` must be set. `validate` needs
+no key — planning a disc is free. `--json` prints the build report as JSON, which is
+what the language wrappers read.
+
+---
+
+## Writing DDP
+
+`ddpbuild` turns WAV audio and a manifest into a DDP 2.00 fileset: `DDPID`, `DDPMS`,
+`PQDESCR`, `IMAGE.DAT`, and where the manifest calls for them `CDTEXT.BIN`,
+`IDENT.TXT` and `CHECKSUM.MD5`.
+
+**Writing is a separate entitlement.** A reader licence is refused, and the error names
+the entitlement that is missing. Ask the publisher for a build licence.
+
+### The manifest
+
+One JSON document describes the disc. See **[MANIFEST.md](MANIFEST.md)** for the full
+schema.
+
+```json
+{
+  "disc": {
+    "title": "Night Ferry",
+    "performer": "The Harbour Lights",
+    "upc_ean": "0602537351169",
+    "cd_text": true
+  },
+  "tracks": [
+    {"file": "audio/01.wav", "title": "Slack Water", "isrc": "ZZABC2500001"},
+    {"file": "audio/02.wav", "title": "Cold Harbour", "pregap": "00:05:00"}
+  ]
+}
+```
+
+Track paths resolve relative to the manifest.
+
+### It is the same document the reader writes
+
+`ddp process` writes its metadata in exactly this schema, so an extract is directly a
+build input and a disc can be taken apart and put back together with nothing in
+between to disagree:
+
+```bash
+ddp process      master/ extract/          # writes extract/metadata.json
+ddpbuild build   extract/metadata.json rebuilt/
+```
+
+Done this way the rebuild reproduces the master byte for byte, checksums included.
+
+### Audio requirements
+
+Every WAV must be 44.1 kHz, 16-bit, stereo PCM. Anything else is rejected, naming the
+file, what it is, and what it needs to be. Nothing is resampled, dithered or
+channel-mapped: a master is written as it was approved.
+
+Audio that does not fill a whole number of 2352-byte sectors is padded to the sector
+boundary with silence, because a CD cannot store a partial sector. Every pad is
+reported per track rather than done quietly.
+
+### Pregaps
+
+By default `pregap` inserts digital silence before a track. Real masters often carry
+audio in their pauses — dither, room tone, a fade — so a pregap can instead be taken
+from the head of the track's own file:
+
+```json
+{"file": "02.wav", "pregap": "00:05:00", "pregap_source": "audio"}
+```
+
+That is what a lossless extract produces, and what makes a bit-identical rebuild
+possible.
+
+### Validation
+
+Errors, with nothing written: audio that is not Red Book; a track with no audio; more
+than 99 tracks or 99 indices; an index past the end of its track; a malformed ISRC or
+UPC; a disc longer than the 99:59:74 the PQ descriptor can address; CD-TEXT needing
+more than 256 packs or holding characters ISO 8859-1 cannot represent.
+
+Warnings, reported but not fatal: a track under the Red Book four-second minimum; a
+disc past 74 or 80 minutes; a UPC whose check digit disagrees; sector padding.
+`--strict` makes warnings fatal.
 
 ---
 
@@ -120,15 +232,21 @@ pip install -e /path/to/ddp-sdk/python
 ### API
 
 ```python
-from ddp_sdk import process, process_from_bytes, EngineError
+from ddp_sdk import process, process_from_bytes, build, validate, EngineError
 
-# From path (directory or ZIP)
+# Reading. From a path (directory or ZIP)
 metadata = process("/path/to/ddp", "/path/to/output", "your-license-key")
 
 # From in-memory files — writes to output path, returns metadata
 files = {"DDPID": ..., "PQDESCR": ..., "DDPMS": ...}
 metadata = process_from_bytes(files, "/path/to/output", "your-license-key")
 # WAVs written to /path/to/output/track_01.wav, etc.
+
+# Writing. Needs a build licence; requires ddpbuild in PATH (or DDP_BUILD_BIN set)
+print(validate("album.json"))                     # no licence needed
+report = build("album.json", "/path/to/ddp-out", "your-build-license-key")
+for f in report["files"]:
+    print(f["name"], f["md5"])
 ```
 
 Raises `EngineError` on failure (invalid key, parse error, etc.).
@@ -137,7 +255,17 @@ Raises `EngineError` on failure (invalid key, parse error, etc.).
 
 ## TypeScript / Node Wrapper
 
-Thin wrapper that invokes the `ddp` binary. Requires `ddp` in PATH (or `DDP_SDK_BIN` set).
+Thin wrapper that invokes the `ddp` and `ddpbuild` binaries. Requires them in PATH (or
+`DDP_SDK_BIN` / `DDP_BUILD_BIN` set).
+
+Writing:
+
+```ts
+import { build, validate } from "ddp-sdk";
+
+console.log(await validate("album.json"));                  // no licence needed
+const report = await build("album.json", "out/", process.env.DDP_BUILD_LICENSE_KEY!);
+```
 
 ### Install
 
@@ -166,7 +294,16 @@ For Python/TypeScript in serverless: include the `ddp` binary in your deployment
 
 ## C# / .NET Wrapper
 
-Thin wrapper that invokes the `ddp` binary. Requires `ddp` in PATH (or `DDP_SDK_BIN` set). Targets .NET 6.0+.
+Writing:
+
+```csharp
+// The class sits inside a namespace of the same name, hence the double qualification.
+var text   = DDPEngine.DDPEngine.Validate("album.json");     // no licence needed
+var report = DDPEngine.DDPEngine.Build("album.json", "out/", buildLicenseKey);
+```
+
+
+Thin wrapper that invokes the `ddp` and `ddpbuild` binaries. Requires them in PATH (or `DDP_SDK_BIN` / `DDP_BUILD_BIN` set). Targets .NET 8.0 (LTS) and later.
 
 ### Install
 
@@ -193,7 +330,15 @@ Throws `EngineError` on failure.
 
 ## Java Wrapper
 
-Thin wrapper that invokes the `ddp` binary. Requires `ddp` in PATH (or `DDP_SDK_BIN` set). Java 17+.
+Writing:
+
+```java
+String text = DDPEngine.validate("album.json", false);     // no licence needed
+JsonNode report = DDPEngine.build("album.json", "out/", buildLicenseKey);
+```
+
+
+Thin wrapper that invokes the `ddp` and `ddpbuild` binaries. Requires them in PATH (or `DDP_SDK_BIN` / `DDP_BUILD_BIN` set). Java 17+.
 
 ### Install
 
